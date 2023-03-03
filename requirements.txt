@@ -4,6 +4,7 @@ opencv-contrib-python==4.7.0.72
 paho-mqtt==1.6.1
 Pillow==9.4.0
 pypng==0.20220715.0
+python-dotenv==1.0.0
 pyzbar==0.1.9
 qrcode==7.4.2
-typing-extensions==4.5.0
+typing_extensions==4.5.0
