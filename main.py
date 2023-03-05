@@ -72,3 +72,6 @@ if __name__ == "__main__":
             result = data["data"]
             logging.info(f"Fetched data {result}. Checking data ...")
             checkQR(result)
+            '''
+            {"qrCodeContent": "{\"Id\":14,\"ApartmentCode\":\"I5-2609\"}"}
+            '''
