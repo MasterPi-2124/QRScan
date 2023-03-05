@@ -4,7 +4,6 @@ import requests
 from dotenv import load_dotenv
 import logging
 from mqtt import MQTTClient
-import keyboard
 from QRScan import main as QRScan
 
 logging.basicConfig(level=logging.DEBUG)
@@ -45,6 +44,3 @@ if __name__ == "__main__":
     thisDevice.client.loop_start()
     while True:
         logging.info("The device started!")
-        if keyboard.is_pressed("s"):
-            logging.info("User's keyboard pressed. Start scanning QR Code.")
-            QRScan()
