@@ -14,7 +14,6 @@ def decodeCam(image):
   global data
   gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
   barcodes = pyzbar.decode(gray)
-  print(barcodes)
   for barcode in barcodes:
       barcodeData = barcode.data.decode()
       barcodeType = barcode.type

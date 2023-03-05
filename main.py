@@ -1,3 +1,4 @@
+import json
 import os
 import time
 import requests
@@ -53,4 +54,5 @@ if __name__ == "__main__":
     while True:
         if GPIO.input(gpio):
             logging.info("Nearing object detected. Scanning for QR code ...")
-            QRScan()
+            data = QRScan()
+            result = data["data"]
