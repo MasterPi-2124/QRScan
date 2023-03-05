@@ -21,35 +21,35 @@ def decodeCam(image):
 
 
 def main():
-    try:
-      while True:
-        # Read current frame
-        ret, frame = camera.read()
-        im = decodeCam(frame)
-        cv2.imshow("code detector", frame)
-        if(cv2.waitKey(1) == ord("q")):
-          break
+  try:
+    while True:
+    # Read current frame
+      ret, frame = camera.read()
+      im=decodeCam(frame)
+      cv2.imshow("code detector", frame)
+      if(cv2.waitKey(1) == ord("q")):
+        break
+      
+    # When the code is stopped the below closes all the applications/windows that the above has created
+    camera.release()
+    cv2.destroyAllWindows()
 
-        # When the code is stopped the below closes all the applications/windows that the above has created
-        camera.release()
-        cv2.destroyAllWindows()
-
-    except KeyboardInterrupt:
-        print("interrupted!")
+  except KeyboardInterrupt:
+    print('interrupted!')
 '''
-    try:
-      while True:
-      # Read current frame
-        ret, frame = camera.read()
-        im=decodeCam(frame)
-        cv2.imshow("code detector", frame)
-        if(cv2.waitKey(1) == ord("q")):
-          break
-        
-      # When the code is stopped the below closes all the applications/windows that the above has created
-      camera.release()
-      cv2.destroyAllWindows()
+  try:
+    while True:
+    # Read current frame
+      ret, frame = camera.read()
+      im=decodeCam(frame)
+      cv2.imshow("code detector", frame)
+      if(cv2.waitKey(1) == ord("q")):
+        break
+      
+    # When the code is stopped the below closes all the applications/windows that the above has created
+    camera.release()
+    cv2.destroyAllWindows()
 
-    except KeyboardInterrupt:
-      print('interrupted!')
+  except KeyboardInterrupt:
+    print('interrupted!')
 '''
