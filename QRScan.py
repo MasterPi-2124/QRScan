@@ -16,7 +16,6 @@ def decodeCam(image):
   barcodes = pyzbar.decode(gray)
   for barcode in barcodes:
       barcodeData = barcode.data.decode()
-      print("barcode: ", barcodeData)
       barcodeType = barcode.type
       data = {"date": str(datetime.now()), "data": barcodeData, "type": barcodeType}
   

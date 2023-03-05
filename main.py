@@ -40,18 +40,29 @@ def getIndoorDevices(ID):
         logging.info(f"Found {len(devicesList)} devices. Found these topics: {topics}")
 
 def checkQR(data):
+    s = ""
+    for i in data:
+        if i != "\\":
+            s = s + i
+    print(s)
+
     result = requests.post(
         f"{os.getenv('API')}/QRCode/CheckQRCode",
         headers={
-            "accept": "application/json",
+            "accept": "text/json",
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36",
         },
         json={
-        "qrCodeContent": data
+        "qrCodeContent": s
         }
     )
+    result = result.json()
+    print(result)
 
-    print(result.json())
+    if result["message"] == "Mã QR code hợp lệ":
+        return True
+    else:
+        return False
 
 if __name__ == "__main__":
     if devicesList == []:
@@ -71,7 +82,17 @@ if __name__ == "__main__":
             data = QRScan()
             result = data["data"]
             logging.info(f"Fetched data {result}. Checking data ...")
-            checkQR(result)
-            '''
-            {"qrCodeContent": "{\"Id\":14,\"ApartmentCode\":\"I5-2609\"}"}
-            '''
+            if checkQR(result):
+                for topic in topics:
+                    thisDevice.publish(message=str({
+                        "MQTT_STATUS_CODE": 5,
+                        "date": data["date"]
+                    }),
+                    topic = topic)
+            else:
+                for topic in topics:
+                    thisDevice.publish(message=str({
+                        "MQTT_STATUS_CODE": 6,
+                        "date": data["date"]
+                    }),
+                    topic = topic)
