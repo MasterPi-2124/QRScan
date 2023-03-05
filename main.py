@@ -5,9 +5,15 @@ from dotenv import load_dotenv
 import logging
 from mqtt import MQTTClient
 from QRScan import main as QRScan
+import RPi.GPIO as GPIO
 
 logging.basicConfig(level=logging.DEBUG)
 load_dotenv()
+
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+gpio = int(f"{os.getenv('GPIO')}")
+GPIO.setup(gpio, GPIO.IN)
 
 devicesList = topics = []
 clientID = ""
@@ -42,5 +48,9 @@ if __name__ == "__main__":
     thisDevice.connect()
     thisDevice.subscribe(topics)
     thisDevice.client.loop_start()
+    logging.info("The device started!")
+
     while True:
-        logging.info("The device started!")
+        if GPIO.input(gpio):
+            logging.info("Nearing object detected. Scanning for QR code ...")
+            QRScan()
