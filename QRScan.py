@@ -8,17 +8,18 @@ from datetime import datetime
 camera = cv2.VideoCapture(0)
 # camera.set(3,width)
 # camera.set(4,height)
-
+data = {}
 
 def decodeCam(image):
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    barcodes = pyzbar.decode(gray)
-    for barcode in barcodes:
-        barcodeData = barcode.data.decode()
-        barcodeType = barcode.type
-        data = {"date": str(datetime.now()), "data": barcodeData, "type": barcodeType}
-        print(barcodeData)
-
+  global data
+  gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+  barcodes = pyzbar.decode(gray)
+  for barcode in barcodes:
+      barcodeData = barcode.data.decode()
+      barcodeType = barcode.type
+      data = {"date": str(datetime.now()), "data": barcodeData, "type": barcodeType}
+  
+  print(data)
 
 def main():
   try:
@@ -36,20 +37,3 @@ def main():
 
   except KeyboardInterrupt:
     print('interrupted!')
-'''
-  try:
-    while True:
-    # Read current frame
-      ret, frame = camera.read()
-      im=decodeCam(frame)
-      cv2.imshow("code detector", frame)
-      if(cv2.waitKey(1) == ord("q")):
-        break
-      
-    # When the code is stopped the below closes all the applications/windows that the above has created
-    camera.release()
-    cv2.destroyAllWindows()
-
-  except KeyboardInterrupt:
-    print('interrupted!')
-'''
