@@ -12,7 +12,6 @@ camera = cv2.VideoCapture(0)
 def decodeCam(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     barcodes = pyzbar.decode(gray)
-    print('reading...', end='\r')
     for barcode in barcodes:
         barcodeData = barcode.data.decode()
         barcodeType = barcode.type
@@ -21,16 +20,14 @@ def decodeCam(image):
           "date": str(datetime.now()),
           "data": barcodeData
         }
-        print(data)
+        print(barcodeData)
+        
 
 try:
-  while True:
   # Read current frame
-    ret, frame = camera.read()
-    im=decodeCam(frame)
-    cv2.imshow("code detector", frame)
-    if(cv2.waitKey(1) == ord("q")):
-      break
+  ret, frame = camera.read()
+  im=decodeCam(frame)
+  cv2.imshow("code detector", frame)
     
   # When the code is stopped the below closes all the applications/windows that the above has created
   camera.release()
