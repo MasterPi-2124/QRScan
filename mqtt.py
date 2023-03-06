@@ -2,6 +2,7 @@ import paho.mqtt.client as mqtt_client
 from dotenv import load_dotenv
 import os
 import logging
+import time
 
 load_dotenv()
 
@@ -51,4 +52,12 @@ class MQTTClient:
         logging.info(f"Client disconnected from broker {self.broker}:{self.port}")
     
     def call(self, topic):
-        res = self.client.publich(topic = topic[0])
+        res = self.client.publish(topic = topic[0], payload = str({
+            "MQTT_STATUS_CODE": 1,
+            "date": time.ctime()
+        }), qos = topic[1])
+        
+        if res[0] == 0:
+            logging.info(f"Sent data to topic {topic}.")
+        else: 
+            logging.error(f"Failed to send data to {topic}.")
