@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import os
 import logging
 import time
+import json
 
 load_dotenv()
 
@@ -31,6 +32,22 @@ class MQTTClient:
     def subscribe(self, topic):
         def on_message(client, userdata, msg):
             print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
+            s = ""
+            for i in str(msg.payload.decode()):
+                if i !="'":
+                    s =s + i
+                else:
+                    s = s + "\""
+            print(s)
+            data = json.loads(s)
+            if data["MQTT_STATUS"] == "2":
+                logging.info(f"The call is missed.")
+            elif data["MQTT_STATUS"] == "3":
+                logging.info(f"The request is accepted.")   
+                for t in topic:
+                    self.publish("OPEN THE FUCKING DOOR!", t)
+            elif data["MQTT_STATUS"] == "4":
+                logging.info(f"The request is denied.")
 
         self.client.subscribe(topic)
         self.client.on_message = on_message
@@ -53,7 +70,7 @@ class MQTTClient:
     
     def call(self, topic):
         res = self.client.publish(topic = topic[0], payload = str({
-            "MQTT_STATUS_CODE": 1,
+            "MQTT_STATUS": 1,
             "date": time.ctime()
         }), qos = topic[1])
         

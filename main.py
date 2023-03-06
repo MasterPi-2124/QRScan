@@ -1,6 +1,4 @@
-import json
 import os
-import time
 import requests
 from dotenv import load_dotenv
 import logging
@@ -19,7 +17,7 @@ GPIO.setup(gpio, GPIO.IN)
 devicesList = topics = []
 clientID = ""
 
-def getIndoorDevices(ID):
+def getIndoorDevices():
     global devicesList, topics, clientID
     devicesList = requests.get(
         f"{os.getenv('API')}/IndoorDevice/GetIndoorDevices",
@@ -39,6 +37,19 @@ def getIndoorDevices(ID):
             topics.append((topic['apartmentCode'], 1))
         logging.info(f"Found {len(devicesList)} devices. Found these topics: {topics}")
 
+def saveHistory(result, MQTT_STATUS):
+    requests.post(f"{os.getenv('API')}/AccessHistory/SaveAccessHistory",
+                        headers={
+            "accept": "text/json",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36",
+        },
+        json={
+        "apartmentCode": result["data"]["apartmentCode"],
+        "visitorName": result["data"]["visitorName"],
+        "mqttType": MQTT_STATUS
+        })
+    
+    
 def checkQR(data):
     s = ""
     for i in data:
@@ -57,29 +68,17 @@ def checkQR(data):
         }
     )
     result = result.json()
-    print(result)
-
-    res = requests.post(f"{os.getenv('API')}/AccessHistory/SaveAccessHistory",
-                        headers={
-            "accept": "text/json",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36",
-        },
-        json={
-        "apartmentCode": result["data"]["apartmentCode"],
-        "visitorName": result["data"]["visitorName"],
-        "mqttType": 5 if result["message"] == "Mã QR code hợp lệ" else 6
-        })
 
     if result["message"] == "Mã QR code hợp lệ":
+        saveHistory(result, 5)
         return True
     else:
+        saveHistory(result, 6)
         return False
 
 if __name__ == "__main__":
     if devicesList == []:
-        getIndoorDevices("as")
-    
-    print(topics)
+        getIndoorDevices()
     
     thisDevice = MQTTClient(clientID)
     thisDevice.connect()
@@ -96,14 +95,18 @@ if __name__ == "__main__":
             if checkQR(result):
                 for topic in topics:
                     thisDevice.publish(message=str({
-                        "MQTT_STATUS_CODE": 5,
+                        "MQTT_STATUS": 5,
                         "date": data["date"]
                     }),
                     topic = topic)
             else:
                 for topic in topics:
                     thisDevice.publish(message=str({
-                        "MQTT_STATUS_CODE": 6,
+                        "MQTT_STATUS": 6,
                         "date": data["date"]
                     }),
                     topic = topic)
+        
+        # for topic in topics:
+        #     thisDevice.call(topic)
+        # time.sleep(600)
