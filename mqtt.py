@@ -49,3 +49,6 @@ class MQTTClient:
         self.client.disconnect()
         self.client.on_disconnect = on_disconnect
         logging.info(f"Client disconnected from broker {self.broker}:{self.port}")
+    
+    def call(self, topic):
+        res = self.client.publich(topic = topic[0])
