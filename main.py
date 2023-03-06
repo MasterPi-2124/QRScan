@@ -59,6 +59,17 @@ def checkQR(data):
     result = result.json()
     print(result)
 
+    res = requests.post(f"{os.getenv('API')}/AccessHistory/SaveAccessHistory",
+                        headers={
+            "accept": "text/json",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36",
+        },
+        json={
+        "apartmentCode": result["data"]["apartmentCode"],
+        "visitorName": result["data"]["visitorName"],
+        "mqttType": 5 if result["message"] == "Mã QR code hợp lệ" else 6
+        })
+
     if result["message"] == "Mã QR code hợp lệ":
         return True
     else:
