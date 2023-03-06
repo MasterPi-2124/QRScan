@@ -39,13 +39,15 @@ class MQTTClient:
                 else:
                     s = s + "\""
             print(s)
-            data = json.loads(s)
-            if data["MQTT_STATUS"] == 2:
-                logging.info(f"The call is missed.")
-            elif data["MQTT_STATUS"] == 3:
-                logging.info(f"The request is accepted.")   
-            elif data["MQTT_STATUS"] == 4:
-                logging.info(f"The request is denied.")
+            if s != "3":
+                data = json.loads(s)
+                if data["MQTT_STATUS"] == 2:
+                    logging.info(f"The call is missed.")
+                elif data["MQTT_STATUS"] == 3:
+                    logging.info(f"The request is accepted.")   
+                    self.publish("3", ("opendoor", 1))
+                elif data["MQTT_STATUS"] == 4:
+                    logging.info(f"The request is denied.")
 
         self.client.subscribe(topic)
         self.client.on_message = on_message
