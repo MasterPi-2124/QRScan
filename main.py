@@ -90,26 +90,27 @@ if __name__ == "__main__":
     logging.info("The device started!")
 
     while True:
-        # if GPIO.input(gpio):
-        #     logging.info("Nearing object detected. Scanning for QR code ...")
-        #     data = QRScan()
-        #     result = data["data"]
-        #     logging.info(f"Fetched data {result}. Checking data ...")
-        #     if checkQR(result):
-        #         for topic in topics:
-        #             thisDevice.publish(message=str({
-        #                 "MQTT_STATUS": 5,
-        #                 "date": data["date"]
-        #             }),
-        #             topic = topic)
-        #     else:
-        #         for topic in topics:
-        #             thisDevice.publish(message=str({
-        #                 "MQTT_STATUS": 6,
-        #                 "date": data["date"]
-        #             }),
-        #             topic = topic)
-        time.sleep(5)
-        for topic in topics:
-            thisDevice.call(topic)
-        time.sleep(600)
+        if GPIO.input(gpio):
+            logging.info("Nearing object detected. Scanning for QR code ...")
+            data = QRScan()
+            result = data["data"]
+            logging.info(f"Fetched data {result}. Checking data ...")
+            if checkQR(result):
+                for topic in topics:
+                    thisDevice.publish(message=str({
+                        "MQTT_STATUS": 5,
+                        "date": data["date"]
+                    }),
+                    topic = topic)
+            else:
+                for topic in topics:
+                    thisDevice.publish(message=str({
+                        "MQTT_STATUS": 6,
+                        "date": data["date"]
+                    }),
+                    topic = topic)
+                    
+        # time.sleep(5)
+        # for topic in topics:
+        #     thisDevice.call(topic)
+        # time.sleep(600)
