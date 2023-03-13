@@ -5,7 +5,6 @@ import logging
 from mqtt import MQTTClient
 from QRScan import main as QRScan
 import RPi.GPIO as GPIO
-import time
 
 logging.basicConfig(level=logging.DEBUG)
 load_dotenv()
@@ -50,8 +49,7 @@ def saveHistory(result, MQTT_STATUS):
         "visitorName": result["data"]["visitorName"],
         "mqttType": MQTT_STATUS
         })
-    
-    
+
 def checkQR(data):
     s = ""
     for i in data:
@@ -93,22 +91,25 @@ if __name__ == "__main__":
         if GPIO.input(gpio):
             logging.info("Nearing object detected. Scanning for QR code ...")
             data = QRScan()
-            result = data["data"]
-            logging.info(f"Fetched data {result}. Checking data ...")
-            if checkQR(result):
-                for topic in topics:
-                    thisDevice.publish(message=str({
-                        "MQTT_STATUS": 5,
-                        "date": data["date"]
-                    }),
-                    topic = topic)
+            if (data == {}):
+                logging.warn("No QR data found. Please try again.")
             else:
-                for topic in topics:
-                    thisDevice.publish(message=str({
-                        "MQTT_STATUS": 6,
-                        "date": data["date"]
-                    }),
-                    topic = topic)
+                result = data["data"]
+                logging.info(f"Fetched data {result}. Checking data ...")
+                if checkQR(result):
+                    for topic in topics:
+                        thisDevice.publish(message=str({
+                            "MQTT_STATUS": 5,
+                            "date": data["date"]
+                        }),
+                        topic = topic)
+                else:
+                    for topic in topics:
+                        thisDevice.publish(message=str({
+                            "MQTT_STATUS": 6,
+                            "date": data["date"]
+                        }),
+                        topic = topic)
                     
         # time.sleep(5)
         # for topic in topics:
